@@ -1,0 +1,28 @@
+development:
+  google:
+    id: 'YOUR_ADRESS@gmail.com'
+    password: '*********'
+    calendar_feed:
+        default : 'http://www.google.com/calendar/feeds/YOUR_ADRESS%40gmail.com/private-*******/full'
+        another_cal : 'http://www.google.com/calendar/feeds/YOUR_ADRESS%40gmail.com/private-*******/full'
+  bitly:
+    id: 'YOUR_ID'
+    api_key: '******'
+    version: '2.0.1'
+
+production:
+  twitter:
+    consumer_key: '********'
+    consumer_secret: '********'
+    access_token: '*******'
+    access_secret: '********'
+  google:
+    id: 'YOUR_ADRESS@gmail.com'
+    password: '*********'
+    calendar_feed:
+        default : 'http://www.google.com/calendar/feeds/YOUR_ADRESS%40gmail.com/private-*******/full'
+        another_cal : 'http://www.google.com/calendar/feeds/YOUR_ADRESS%40gmail.com/private-*******/full'
+  bitly:
+    id: 'YOUR_ID'
+    api_key: '******'
+    version: '2.0.1'
