@@ -5,10 +5,12 @@ require 'gcalapi'
 require 'yaml'
 require 'uri'
 require 'json'
+require 'pp'
 
 class Gritter
-  def initialize(env = "development")
-    @conf = YAML.load_file(File.dirname(__FILE__) + "/gritter.yml")
+  def initialize(env = "development", yml = nil)
+    yml ||= File.dirname(__FILE__) + "/gritter.yml"
+    @conf = YAML.load_file(yml)
     @conf = @conf[env]
     if @conf["twitter"]
 #      oauth = Twitter::OAuth.new(
@@ -71,12 +73,14 @@ class Gritter
   def shrink_url(src)
     ret = src.clone
     URI.extract(src, %w[http https]) do |url|
-      conf = @conf['bitly']
-      query = "version=#{conf['version']}&longUrl=#{url}&login=#{conf['id']}&apiKey=#{conf['api_key']}"
-      result = JSON.parse(Net::HTTP.get("api.bit.ly", "/shorten?#{query}"))
-      result['results'].each_pair do |long_url, value|
-        ret.gsub! long_url, value['shortUrl']
-      end 
+      if URI.parse(url).host != "bit.ly"
+        conf = @conf['bitly']
+        query = "version=#{conf['version']}&longUrl=#{url}&login=#{conf['id']}&apiKey=#{conf['api_key']}"
+        result = JSON.parse(Net::HTTP.get("api.bit.ly", "/shorten?#{query}"))
+        result['results'].each_pair do |long_url, value|
+          ret.gsub! long_url, value['shortUrl']
+        end
+      end
     end
     ret
   end
