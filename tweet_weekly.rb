@@ -13,6 +13,8 @@ def talk_event(me, event_date, tpl = nil, cal = "default")
   end
 end
 
+Dir.chdir(File.dirname(__FILE__))
+
 gritter = Gritter.new($ARGV[0], "./gritter.yml")
 
 puts "start gritter."
