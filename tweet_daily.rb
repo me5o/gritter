@@ -8,7 +8,6 @@ def talk_event(me, event_date, tpl = nil, cal = "default")
   dates << dates[0] if dates.size == 1
   sec = 1/24/60/60
   me.schedule(cal, "start-min" => dates[0], "start-max" => dates[1] + (1 - sec)).each do |event|
-    puts "."
     me.talk event.to_message(tpl), 140
     sleep 1
   end
