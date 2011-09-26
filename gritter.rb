@@ -4,10 +4,13 @@ require 'twitter'
 require 'gcalapi'
 require 'yaml'
 require 'uri'
+require 'cgi'
 require 'json'
 require 'pp'
 
 class Gritter
+  attr_reader :twitter
+
   def initialize(env = "development", yml = nil)
     yml ||= File.dirname(__FILE__) + "/gritter.yml"
     @conf = YAML.load_file(yml)
@@ -73,9 +76,9 @@ class Gritter
   def shrink_url(src)
     ret = src.clone
     URI.extract(src, %w[http https]) do |url|
-      if URI.parse(url).host != "bit.ly"
+      if URI.parse(url).host != "bit.ly" && url.length > 20
         conf = @conf['bitly']
-        query = "version=#{conf['version']}&longUrl=#{url}&login=#{conf['id']}&apiKey=#{conf['api_key']}"
+        query = "version=#{conf['version']}&longUrl=#{CGI.escape(url)}&login=#{conf['id']}&apiKey=#{conf['api_key']}"
         result = JSON.parse(Net::HTTP.get("api.bit.ly", "/shorten?#{query}"))
         result['results'].each_pair do |long_url, value|
           ret.gsub! long_url, value['shortUrl']
@@ -88,11 +91,13 @@ end
 
 class GoogleCalendar::Event
   def to_message(format = ":date : :title :where (:desc)")
-    val = {"title" => "", "where" => "", "desc" => "", "date" => ""}
+    val = {"title" => "", "where" => "", "desc" => "", "date" => "", "remain" => ""}
 
     val["title"] = self.title
     val["where"] = "at " + self.where unless self.where.empty?
     val["desc"] = self.desc.split("\n").first unless self.desc.nil?
+    st = self.st.getlocal
+    val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
     if self.allday
       val["date"] = self.st.getlocal.strftime("%m/%d(%a)")
     else
@@ -103,7 +108,7 @@ class GoogleCalendar::Event
 
     ret = format.clone
     val.each_pair do |key, val|
-      ret.gsub! ":#{key}", val 
+      ret.gsub! ":#{key}", val
     end
     ret.strip
   end

@@ -8,6 +8,7 @@ def talk_event(me, event_date, tpl = nil, cal = "default")
   dates << dates[0] if dates.size == 1
   sec = 1/24/60/60
   me.schedule(cal, "start-min" => dates[0], "start-max" => dates[1] + (1 - sec)).each do |event|
+    puts "."
     me.talk event.to_message(tpl), 140
     sleep 1
   end
@@ -48,6 +49,10 @@ talk_event(bb2289, Date.today + 1, tpl)
 #member info
 tpl = "[メンバー情報]『:title』明日です！ :date :where #2289bb :desc"
 talk_event(bb2289, Date.today + 1, tpl, "members")
+
+#countdown event
+tpl = "『:title』[:date]まで残り:remain日！ #2289bb :desc"
+talk_event(bb2289, [Date.today + 1, Date.today + 365], tpl, "countdown")
 
 puts "end."
 
