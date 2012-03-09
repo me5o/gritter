@@ -80,8 +80,10 @@ class Gritter
         conf = @conf['bitly']
         query = "version=#{conf['version']}&longUrl=#{CGI.escape(url)}&login=#{conf['id']}&apiKey=#{conf['api_key']}"
         result = JSON.parse(Net::HTTP.get("api.bit.ly", "/shorten?#{query}"))
-        result['results'].each_pair do |long_url, value|
-          ret.gsub! long_url, value['shortUrl']
+        unless result['results'].nil?
+          result['results'].each_pair do |long_url, value|
+            ret.gsub! long_url, value['shortUrl']
+          end
         end
       end
     end
