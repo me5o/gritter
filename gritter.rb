@@ -51,6 +51,37 @@ class Gritter
     @twitter.update(message) if @twitter
   end
 
+  def members(group_name, new = false)
+    ids = {}
+    if @twitter
+      i = -1
+      until i == 0
+        list_members = @twitter.list_members(group_name, :cursor => i)
+        list_members.users.each do |member|
+          ids[member["id"]] = member["screen_name"]
+        end
+        i = list_members.next_cursor
+        sleep(1)
+      end
+
+      if new
+        id = @twitter.user.screen_name
+        data_dir = File.dirname(__FILE__) + "/data/#{id}/"
+        path = data_dir + "#{group_name}.yml"
+        old_ids = File.exists?(path) ? YAML.load_file(path) : ids
+        Dir.mkdir(data_dir) unless File.exists?(data_dir)
+        open( path, "w" ) do |f|
+          f.write ids.to_yaml
+        end
+
+        ids.delete_if do |key, val|
+          old_ids.key?(key)
+        end
+      end
+    end
+    ids
+  end
+
   def collect(keyword, since = nil)
     since ||= Date.today - 1
     since = since.strftime("%Y-%m-%d")

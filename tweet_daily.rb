@@ -53,5 +53,12 @@ talk_event(bb2289, Date.today + 1, tpl, "members")
 tpl = "『:title』[:date]まで残り:remain日！ #2289bb :desc"
 talk_event(bb2289, [Date.today + 1, Date.today + 365], tpl, "countdown")
 
+#new commer
+members = bb2289.members("twizz-members", true)
+members.each do |key, val|
+  bb2289.talk "[メンバー情報] メンバーに @#{val} さんが加わりました！ http://bit.ly/Hw7U9V #2289bb", 140
+  sleep 1
+end
+
 puts "end."
 
