@@ -55,9 +55,13 @@ talk_event(bb2289, [Date.today + 1, Date.today + 365], tpl, "countdown")
 
 #new commer
 members = bb2289.members("twizz-members", true)
-members.each do |key, val|
-  bb2289.talk "[メンバー情報] メンバーに @#{val} さんが加わりました！ http://bit.ly/Hw7U9V #2289bb", 140
-  sleep 1
+if members.size < 5
+  members.each do |key, val|
+    bb2289.talk "[メンバー情報] メンバーに @#{val} さんが加わりました！ http://bit.ly/Hw7U9V #2289bb", 140
+    sleep 1
+  end
+else
+  puts "[warning] メンバーに5件以上の追加がありました。投稿を保留しました : " + members.values.join(", ")
 end
 
 puts "end."
