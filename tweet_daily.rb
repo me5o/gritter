@@ -45,6 +45,10 @@ bb2289 = Gritter.new($ARGV[0], "./2289bb.yml")
 tpl = "明日は『:title』ですっ。 :date :where #2289bb :desc"
 talk_event(bb2289, Date.today + 1, tpl)
 
+#sipmle tweet
+tpl = ":desc #2289bb"
+talk_event(bb2289, Date.today, tpl, "simple")
+
 #member info
 tpl = "[メンバー情報]『:title』明日です！ :date :where #2289bb :desc"
 talk_event(bb2289, Date.today + 1, tpl, "members")
