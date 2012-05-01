@@ -29,7 +29,7 @@ puts "start 2289bb."
 bb2289 = Gritter.new($ARGV[0], "./2289bb.yml")
 
 #this week schedule
-tpl = "今週は『:title』ですっ。 :date :where #2289bb :desc"
+tpl = "今週は『:title』です。 :date :where #2289bb :desc"
 talk_event(bb2289, [Date.today + 2, nextsunday], tpl)
 
 #member info
