@@ -23,6 +23,10 @@ puts "start gritter."
 tpl = "明日は『:title』があるぐりっ！ :date :where #gsojp :desc"
 talk_event(gritter, Date.today + 1, tpl)
 
+#countdown event
+tpl = "『:title』[:date]まで残り:remain日！ #gsojp :desc"
+talk_event(gritter, [Date.today + 1, Date.today + 365], tpl, "countdown")
+
 #aniversary
 tpl = "今日は:titleぐりっ (-人-) #bigband :desc"
 talk_event(gritter, Date.today, tpl, "aniversary")
