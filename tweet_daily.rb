@@ -20,6 +20,10 @@ gritter = Gritter.new($ARGV[0], "./gritter.yml")
 puts "start gritter."
 
 #tommorow schedule
+tpl = "本日ぐりっ！『:title』 :date :where #gsojp :desc"
+talk_event(gritter, Date.today, tpl)
+
+#tommorow schedule
 tpl = "明日は『:title』があるぐりっ！ :date :where #gsojp :desc"
 talk_event(gritter, Date.today + 1, tpl)
 
@@ -44,6 +48,10 @@ gritter.collect("gsob", Date.today - 1)
 puts "start 2289bb."
 
 bb2289 = Gritter.new($ARGV[0], "./2289bb.yml")
+
+#today schedule
+tpl = "本日です！『:title』 :date :where #2289bb :desc"
+talk_event(bb2289, Date.today, tpl)
 
 #tommorow schedule
 tpl = "明日は『:title』です。 :date :where #2289bb :desc"
