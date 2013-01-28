@@ -48,6 +48,18 @@ class Gritter
     @twitter.update(message) if @twitter
   end
 
+  def talk_to(user, message, is_private = true, limit = 1024, shrink = true)
+    if is_private
+      # direct message
+      message = truncate_message(message, limit, shrink)
+      puts "[To : #{user}] #{message}"
+      @twitter.direct_message_create(user, message) if @twitter
+    else
+      # public mention
+      talk "@#{user} #{message}", limit, shrink
+    end
+  end
+
   def members(group_name, new = false)
     ids = {}
     if @twitter
