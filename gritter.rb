@@ -144,7 +144,7 @@ class GoogleCalendar::Event
     val = {"title" => "", "where" => "", "desc" => "", "date" => "", "remain" => ""}
 
     val["title"] = self.title
-    val["where"] = "at " + self.where unless self.where.empty?
+    val["where"] = "at " + self.where unless self.where.nil? && self.where.empty?
     val["desc"] = self.desc.split("\n").first unless self.desc.nil?
     st = self.st.getlocal
     val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
