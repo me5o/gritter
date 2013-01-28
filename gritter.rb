@@ -43,10 +43,7 @@ class Gritter
   end
 
   def talk(message, limit = 1024, shrink = true)
-    message = shrink_url(message) if shrink
-    if message.split(//u).size > limit
-      message = message.split(//u)[0..limit - 2].join + "…"
-    end
+    message = truncate_message(message, limit, shrink)
     puts message
     @twitter.update(message) if @twitter
   end
@@ -120,6 +117,14 @@ class Gritter
     end
     ret
   end
+
+  def truncate_message(message, limit, shrink)
+    message = shrink_url(message) if shrink
+    if message.split(//u).size > limit
+      message = message.split(//u)[0..limit - 2].join + "…"
+    end
+    message
+  end
 end
 
 class GoogleCalendar::Event
@@ -132,9 +137,11 @@ class GoogleCalendar::Event
     st = self.st.getlocal
     val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
     if self.allday
-      val["date"] = self.st.getlocal.strftime("%m/%d(%a)")
+      t = self.st.getlocal
+      val["date"] = t.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[t.wday]})")
     else
-      date_from = self.st.getlocal.strftime("%m/%d(%a) %H:%M")
+      t = self.st.getlocal
+      date_from = self.st.getlocal.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[t.wday]}) %H:%M")
       date_to =  self.en.getlocal.strftime("%H:%M")
       val["date"] = "#{date_from}-#{date_to}"
     end
