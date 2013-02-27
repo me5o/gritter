@@ -23,7 +23,7 @@ class Gritter
 #        config.oauth_token_secret = @conf["twitter"]["access_secret"]
 #      end
 
-      @twitter = Twitter::Client.new (
+      @twitter = Twitter::Client.new(
         :consumer_key => @conf["twitter"]["consumer_key"],
         :consumer_secret => @conf["twitter"]["consumer_secret"],
         :oauth_token => @conf["twitter"]["access_token"],
