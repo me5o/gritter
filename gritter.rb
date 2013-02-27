@@ -95,17 +95,19 @@ class Gritter
     since ||= Date.today - 1
     since = since.strftime("%Y-%m-%d")
     if @twitter
+      me = Twitter.user.screen_name
       rts = []
       @twitter.retweeted_by_me(:trim_user => true).each do |item|
         rts << item["retweeted_status"]["id"]
       end
 
-      Twitter::Search.new.language("ja").hashtag(keyword).not_from("GSOOBOG").since_date(since).per_page(100).to_a.reverse.each do |item|
-        if rts.include?(item["id"])
-          puts "[ALEADY EXISTS]#{item["id"]} @#{item["created_at"]} #{item["text"]}"
+#      Twitter::Search.new.language("ja").hashtag(keyword).not_from("GSOOBOG").since_date(since).per_page(100).to_a.reverse.each do |item|
+      Twitter.search("#{keyword} -rt -from:#{me} since:#{since}", :result_type => 'recent', :lang => "ja", :count => 100).results.reverse_each do |item|
+        if rts.include?(item.id)
+          puts "[ALEADY EXISTS]#{item.id} @#{item.created_at} #{item.text}"
         else
-          puts "[RT]#{item["id"]} @#{item["created_at"]} #{item["text"]}"
-          @twitter.retweet(item["id"])
+          puts "[RT]#{item.id} @#{item.created_at} #{item.text}"
+          @twitter.retweet(item.id)
           sleep 1
         end
       end

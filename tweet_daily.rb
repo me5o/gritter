@@ -43,7 +43,7 @@ talk_event(gritter, Date.today, tpl, "aniversary")
 #end
 
 #collect relative message
-gritter.collect("gsob", Date.today - 1)
+gritter.collect("#gsob", Date.today - 1)
 
 puts "start 2289bb."
 
