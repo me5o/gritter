@@ -95,7 +95,7 @@ class Gritter
     since ||= Date.today - 1
     since = since.strftime("%Y-%m-%d")
     if @twitter
-      me = Twitter.user.screen_name
+      me = @twitter.user.screen_name
       rts = []
       @twitter.retweeted_by_me(:trim_user => true).each do |item|
         rts << item["retweeted_status"]["id"]
