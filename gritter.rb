@@ -16,21 +16,21 @@ class Gritter
     @conf = YAML.load_file(yml)
     @conf = @conf[env]
     if @conf["twitter"]
-#      oauth = Twitter::OAuth.new(
-#        @conf["twitter"]["consumer_key"],@conf["twitter"]["consumer_secret"])
-#      oauth.authorize_from_access(
-#        @conf["twitter"]["access_token"],@conf["twitter"]["access_secret"])
-#      @twitter = Twitter::Base.new(oauth)
+#      Twitter.configure do |config|
+#        config.consumer_key = @conf["twitter"]["consumer_key"]
+#        config.consumer_secret = @conf["twitter"]["consumer_secret"]
+#        config.oauth_token = @conf["twitter"]["access_token"]
+#        config.oauth_token_secret = @conf["twitter"]["access_secret"]
+#      end
 
-      Twitter.configure do |config|
-        config.consumer_key = @conf["twitter"]["consumer_key"]
-        config.consumer_secret = @conf["twitter"]["consumer_secret"]
-        config.oauth_token = @conf["twitter"]["access_token"]
-        config.oauth_token_secret = @conf["twitter"]["access_secret"]
-      end
-      @twitter = Twitter::Client.new
+      @twitter = Twitter::Client.new (
+        :consumer_key => @conf["twitter"]["consumer_key"],
+        :consumer_secret => @conf["twitter"]["consumer_secret"],
+        :oauth_token => @conf["twitter"]["access_token"],
+        :oauth_token_secret => @conf["twitter"]["access_secret"]
+      )
     end
-    
+
     @google = GoogleCalendar::Service.new(
       @conf["google"]["id"],@conf["google"]["password"])
     @feed = @conf["google"]["calendar_feed"]
