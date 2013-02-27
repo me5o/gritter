@@ -102,7 +102,7 @@ class Gritter
       end
 
 #      Twitter::Search.new.language("ja").hashtag(keyword).not_from("GSOOBOG").since_date(since).per_page(100).to_a.reverse.each do |item|
-      Twitter.search("#{keyword} -rt -from:#{me} since:#{since}", :result_type => 'recent', :lang => "ja", :count => 100).results.reverse_each do |item|
+      @twitter.search("#{keyword} -rt -from:#{me} since:#{since}", :result_type => 'recent', :lang => "ja", :count => 100).results.reverse_each do |item|
         if rts.include?(item.id)
           puts "[ALEADY EXISTS]#{item.id} @#{item.created_at} #{item.text}"
         else
