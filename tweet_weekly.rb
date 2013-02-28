@@ -1,4 +1,5 @@
-#!/opt/loacl/bin/ruby -Ku
+#!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
 $:.unshift(File.dirname(__FILE__))
 require 'gritter'
 
