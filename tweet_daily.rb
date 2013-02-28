@@ -16,7 +16,7 @@ end
 
 Dir.chdir(File.dirname(__FILE__))
 
-gritter = Gritter.new($ARGV[0], "./gritter.yml")
+gritter = Gritter.new(ARGV[0], "./gritter.yml")
 
 puts "start gritter."
 
@@ -48,7 +48,7 @@ gritter.collect("#gsob", Date.today - 1)
 
 puts "start 2289bb."
 
-bb2289 = Gritter.new($ARGV[0], "./2289bb.yml")
+bb2289 = Gritter.new(ARGV[0], "./2289bb.yml")
 
 #today schedule
 tpl = "本日です！『:title』 :date :where #2289bb :desc"
