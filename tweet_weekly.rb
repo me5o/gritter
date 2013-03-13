@@ -16,7 +16,7 @@ end
 
 Dir.chdir(File.dirname(__FILE__))
 
-gritter = Gritter.new($ARGV[0], "./gritter.yml")
+gritter = Gritter.new(ARGV[0], "./gritter.yml")
 
 puts "start gritter."
 
@@ -27,7 +27,7 @@ talk_event(gritter, [Date.today + 2, nextsunday], tpl)
 
 puts "start 2289bb."
 
-bb2289 = Gritter.new($ARGV[0], "./2289bb.yml")
+bb2289 = Gritter.new(ARGV[0], "./2289bb.yml")
 
 #this week schedule
 tpl = "今週は『:title』です。 :date :where #2289bb :desc"
