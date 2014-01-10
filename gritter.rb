@@ -92,7 +92,7 @@ class Gritter
     ids
   end
 
-  def collect(keyword, since = nil)
+  def collect(keyword, since = nil, option = {})
     since ||= Date.today - 1
     since = since.strftime("%Y-%m-%d")
     if @twitter
@@ -105,11 +105,22 @@ class Gritter
 #      Twitter::Search.new.language("ja").hashtag(keyword).not_from("GSOOBOG").since_date(since).per_page(100).to_a.reverse.each do |item|
       @twitter.search("#{keyword} -rt -from:#{me} since:#{since}", :result_type => 'recent', :lang => "ja", :count => 100).results.reverse_each do |item|
         if rts.include?(item.id)
-          puts "[ALEADY EXISTS]#{item.id} @#{item.created_at} #{item.text}"
+#          puts "[ALEADY EXISTS]#{item.id} at #{item.created_at} #{item.user.screen_name} : #{item.text}"
         else
-          puts "[RT]#{item.id} @#{item.created_at} #{item.text}"
-          @twitter.retweet(item.id)
-          sleep 1
+          puts "#{item.id} at #{item.created_at} #{item.user.screen_name} : #{item.text}"
+          is_collect = true
+          if option[:filter]
+            is_collect = ( item.text =~ option[:filter] )
+          end
+          if option[:from]
+            is_collect = option[:from].include?(item.user.screen_name)
+          end
+
+          if is_collect
+            puts "[RT]#{item.id} at #{item.created_at} #{item.user.screen_name} : #{item.text}"
+            @twitter.retweet(item.id)
+            sleep 1
+          end
         end
       end
     end
