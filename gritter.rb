@@ -107,13 +107,13 @@ class Gritter
         if rts.include?(item.id)
 #          puts "[ALEADY EXISTS]#{item.id} at #{item.created_at} #{item.user.screen_name} : #{item.text}"
         else
-          puts "#{item.id} at #{item.created_at} #{item.user.screen_name} : #{item.text}"
+#          puts "#{item.id} at #{item.created_at} #{item.user.screen_name} : #{item.text}"
           is_collect = true
           if option[:filter]
             is_collect = ( item.text =~ option[:filter] )
           end
           if option[:from]
-            is_collect = option[:from].include?(item.user.screen_name)
+            is_collect = option[:from].include?(item.user.id)
           end
 
           if is_collect
