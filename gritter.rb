@@ -92,6 +92,12 @@ class Gritter
     ids
   end
 
+  def messages(option = {})
+    if @twitter
+      @twitter.user_timeline(@twitter.user.id, option)
+    end
+  end
+
   def collect(keyword, since = nil, option = {})
     since ||= Date.today - 1
     since = since.strftime("%Y-%m-%d")
