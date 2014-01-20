@@ -3,12 +3,14 @@
 $:.unshift(File.dirname(__FILE__))
 require 'gritter'
 
-def talk_event(me, event_date, tpl = nil, cal = "default")
+def talk_event(me, event_date, tpl = nil, cal = "default", keyword = nil)
   tpl ||= "[イベント情報]『:title』:date :where #event :desc"
   dates = event_date.is_a?(Array) ? event_date : [event_date]
   dates << dates[0] if dates.size == 1
   sec = 1/24/60/60
-  me.schedule(cal, "start-min" => dates[0], "start-max" => dates[1] + (1 - sec)).each do |event|
+  opt = { "start-min" => dates[0], "start-max" => dates[1] + (1 - sec) }
+  opt["q"] = keyword if keyword
+  me.schedule(cal, opt).each do |event|
     me.talk event.to_message(tpl), 140
     sleep 1
   end
@@ -57,6 +59,12 @@ talk_event(bb2289, Date.today, tpl)
 #tommorow schedule
 tpl = "明日は『:title』です。 :date :where #2289bb :desc"
 talk_event(bb2289, Date.today + 1, tpl)
+
+#rsvp schedule
+tpl = "[出欠]『:title』[:date]まで残り:remain日。20日前までに以下URLより一次回答して下さい。未定の場合も[Maybe]で回答して下さい #2289bb :desc"
+talk_event(bb2289, [Date.today + 20, Date.today + 23], tpl, "default", "#rsvp")
+tpl = "[出欠]『:title』[:date]まで残り:remain日。10日前までに以下URLより回答して下さい。[Maybe]不可。Maybeの方は回答を確定して下さい #2289bb :desc"
+talk_event(bb2289, [Date.today + 10, Date.today + 13], tpl, "default", "#rsvp")
 
 #sipmle tweet
 tpl = ":desc #2289bb"
