@@ -66,6 +66,23 @@ talk_event(bb2289, [Date.today + 20, Date.today + 23], tpl, "default", "#rsvp")
 tpl = "[出欠]『:title』[:date]まで残り:remain日。10日前までに以下URLより回答して下さい。[Maybe]不可。Maybeの方は回答を確定して下さい #2289bb :desc"
 talk_event(bb2289, [Date.today + 10, Date.today + 13], tpl, "default", "#rsvp")
 
+members = bb2289.members("active-members")
+bb2289.event_manager.events.each do |evt|
+  diff = (evt[:start_date] - Date.today).to_i
+  if diff < 20 && diff > 10
+    answerd = []
+    bb2289.event_manager.event_guests(evt[:id]).each do |g|
+      answerd << g[:display_name]
+    end
+    not_answerd = members.values - answerd
+    msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
+    bb2289.talk_to not_answerd, msg, true, 140
+
+    msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています→ #{evt[:url]} #2289bb 不明な場合も[Maybe]で登録"
+    bb2289.talk_to not_answerd, msg, false, 140, false
+  end
+end
+
 #sipmle tweet
 tpl = ":desc #2289bb"
 talk_event(bb2289, Date.today, tpl, "simple")

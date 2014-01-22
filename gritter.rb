@@ -8,9 +8,10 @@ require 'uri'
 require 'cgi'
 require 'json'
 require 'pp'
+require 'lib/event_manager'
 
 class Gritter
-  attr_reader :twitter
+  attr_reader :twitter, :event_manager
 
   def initialize(env = "development", yml = nil)
     yml ||= File.dirname(__FILE__) + "/gritter.yml"
@@ -35,6 +36,10 @@ class Gritter
     @google = GoogleCalendar::Service.new(
       @conf["google"]["id"],@conf["google"]["password"])
     @feed = @conf["google"]["calendar_feed"]
+
+    if @conf["tweetvite"]
+      @event_manager = EventManager.new(@conf["tweetvite"]["id"])
+    end
   end
 
   def schedule(index = "default", option = {})
@@ -43,21 +48,44 @@ class Gritter
     cal.events(option)
   end
 
-  def talk(message, limit = 1024, shrink = true)
+  def talk(message, limit = 140, shrink = true)
     message = truncate_message(message, limit, shrink)
     puts message
     @twitter.update(message) if @twitter
   end
 
-  def talk_to(user, message, is_private = true, limit = 1024, shrink = true)
-    if is_private
-      # direct message
-      message = truncate_message(message, limit, shrink)
-      puts "[To : #{user}] #{message}"
-      @twitter.direct_message_create(user, message) if @twitter
-    else
-      # public mention
-      talk "@#{user} #{message}", limit, shrink
+  def talk_to(user, message, is_private = true, limit = 140, shrink = true)
+    users = user.kind_of?(Array) ? user : [ user ]
+    if is_private # direct message
+      users.each_with_index do |u, idx|
+        sleep 10 if idx > 0
+        message = truncate_message(message, limit, shrink)
+        puts "[To : #{u}] #{message}"
+        @twitter.direct_message_create(u, message) if @twitter
+      end
+    else # public mention
+      messages = []
+      user_str = ""
+      buff = message
+      users.each do |u|
+        user_str = "@#{u} "
+        if (user_str + buff).size > limit
+          if buff == message
+            messages << user_str + buff
+          else
+            messages << buff
+            buff = user_str + message
+          end
+        else
+          buff = user_str + buff
+        end
+      end
+      messages << buff if buff != message
+
+      messages.each_with_index do |msg, idx|
+        sleep 10 if idx > 0
+        talk msg, limit, shrink
+      end
     end
   end
 
