@@ -75,11 +75,16 @@ bb2289.event_manager.events.each do |evt|
       answerd << g[:display_name]
     end
     not_answerd = members.values - answerd
-    msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
-    bb2289.talk_to not_answerd, msg, true, 140
 
-    msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています→ #{evt[:url]} #2289bb 不明な場合も[Maybe]で登録"
-    bb2289.talk_to not_answerd, msg, false, 140, false
+    if (not_answerd.size.to_f / member.values.size.to_f) < 0.5
+      msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
+      bb2289.talk_to not_answerd, msg, true, 140
+
+      msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています→ #{evt[:url]} #2289bb 不明な場合も[Maybe]で登録"
+      bb2289.talk_to not_answerd, msg, false, 140, false
+    else
+      puts "[warning]『#{evt[:name]}』50%以上が未回答の為、投稿を保留しました"
+    end
   end
 end
 
