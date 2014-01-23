@@ -76,7 +76,7 @@ bb2289.event_manager.events.each do |evt|
     end
     not_answerd = members.values - answerd
 
-    if (not_answerd.size.to_f / member.values.size.to_f) < 0.5
+    if (not_answerd.size.to_f / members.values.size.to_f) < 0.5
       msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
       bb2289.talk_to not_answerd, msg, true, 140
 
