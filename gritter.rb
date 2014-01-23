@@ -144,10 +144,10 @@ class Gritter
 #          puts "#{item.id} at #{item.created_at} #{item.user.screen_name} : #{item.text}"
           is_collect = true
           if option[:filter]
-            is_collect = ( item.text =~ option[:filter] )
+            is_collect = is_collect && ( item.text =~ option[:filter] )
           end
           if option[:from]
-            is_collect = option[:from].include?(item.user.id)
+            is_collect = is_collect && option[:from].include?(item.user.id)
           end
 
           if is_collect
