@@ -63,8 +63,8 @@ talk_event(bb2289, Date.today + 1, tpl)
 #rsvp schedule
 tpl = "[出欠]『:title』[:date]まで残り:remain日。20日前までに以下URLより一次回答して下さい。未定の場合も[Maybe]で回答して下さい #2289bb :desc"
 talk_event(bb2289, [Date.today + 20, Date.today + 23], tpl, "default", "#rsvp")
-tpl = "[出欠]『:title』[:date]まで残り:remain日。10日前までに以下URLより回答して下さい。[Maybe]不可。Maybeの方は回答を確定して下さい #2289bb :desc"
-talk_event(bb2289, [Date.today + 10, Date.today + 13], tpl, "default", "#rsvp")
+tpl = "[出欠]『:title』[:date]まで残り:remain日。回答確定期限ですので本日中にURLより回答確定して下さい([Maybe]不可) #2289bb :desc"
+talk_event(bb2289, Date.today + 10, tpl, "default", "#rsvp")
 
 members = bb2289.members("active-members")
 bb2289.event_manager.events.each do |evt|
@@ -86,6 +86,27 @@ bb2289.event_manager.events.each do |evt|
       puts "[warning]『#{evt[:name]}』50%以上が未回答の為、投稿を保留しました"
     end
   end
+  if diff == 10
+    bb2289.event_manager.event_guests(evt[:id]).each do |g|
+      msg = "[出欠確認]『#{evt[:name]}』のあなたの回答は[#{g[:rsvp]}]です。"
+      if g[:rsvp] == :maybe
+        msg << "本日中に回答を確定して下さい。(maybe不可) "
+      else
+        msg << "変更がある場合は本日中にお願いします。"
+      end
+      msg << "回答用URLは #2289bb を参照。※このDMに返信しないで"
+      bb2289.talk_to g[:display_name], msg, true, 140
+      sleep 15
+    end
+  end
+  if diff == 9
+    not_answerd = []
+    bb2289.event_manager.event_guests(evt[:id], :maybe).each do |g|
+      not_answerd << g[:display_name]
+    end
+    msg = "[出欠未確定]『#{evt[:name]}』二次回答の期限を過ぎています([Maybe]不可)→ #{evt[:url]} #2289bb まだ確定できない場合はページに見通しをコメント"
+    bb2289.talk_to not_answerd, msg, false, 140, false
+  end
 end
 
 #sipmle tweet
@@ -100,7 +121,7 @@ talk_event(bb2289, Date.today + 1, tpl, "members")
 tpl = "『:title』[:date]まで残り:remain日！ #2289bb :desc"
 talk_event(bb2289, [Date.today + 1, Date.today + 365], tpl, "countdown")
 
-#new commer
+new commer
 members = bb2289.members("twizz-members", true)
 if members.size < 5
   members.each do |key, val|
