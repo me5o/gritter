@@ -92,7 +92,7 @@ bb2289.event_manager.events.each do |evt|
       if g[:rsvp] == :maybe
         msg << "本日中に回答を確定して下さい。(maybe不可) "
       else
-        msg << "変更がある場合は本日中にお願いします。"
+        msg << "変更がある場合は本日中に！早退/遅刻は必ずコメント欄に！"
       end
       msg << "回答用URLは #2289bb を参照。※このDMに返信しないで"
       bb2289.talk_to g[:display_name], msg, true, 140
