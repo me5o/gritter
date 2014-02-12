@@ -42,7 +42,7 @@ if messages.size > 0
 
   messages.each do |m|
     if m.text =~ /#2289bb/ && m.text =~ /#important/
-      msg = "【同報】" + m.text.sub("#2289bb", "").sub("#important", "").gsub(/ +/, " ") + " ※このDMに返信しないで"
+      msg = "【同報】" + m.text.sub("#important", "").gsub(/ +/, " ") + " ※このDMに返信しないで"
       msg = msg.gsub(/h(ttp[s]?:\/\/)/, "\\1") #urlを含むメッセージがエラーになる
       talk_to_members bb2289, members, msg
     end
