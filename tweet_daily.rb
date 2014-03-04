@@ -104,7 +104,7 @@ bb2289.event_manager.events.each do |evt|
     bb2289.event_manager.event_guests(evt[:id], :maybe).each do |g|
       not_answerd << g[:display_name]
     end
-    msg = "[出欠未確定]『#{evt[:name]}』二次回答の期限を過ぎています([Maybe]不可)→ #{evt[:url]} #2289bb まだ確定できない場合はページに見通しをコメント"
+    msg = "『#{evt[:name]}』二次回答期限を過ぎています(Maybe不可)→ #{evt[:url]} #2289bb 確定できない場合はページに見通しをコメント"
     bb2289.talk_to not_answerd, msg, false, 140, false
   end
 end
