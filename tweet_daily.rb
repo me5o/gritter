@@ -62,7 +62,7 @@ talk_event(bb2289, Date.today + 1, tpl)
 
 #rsvp schedule
 tpl = "[出欠]『:title』[:date]まで残り:remain日。20日前までに以下URLより一次回答して下さい。未定の場合も[Maybe]で回答して下さい #2289bb :desc"
-talk_event(bb2289, [Date.today + 20, Date.today + 23], tpl, "default", "#rsvp")
+talk_event(bb2289, [Date.today + 20, Date.today + 22], tpl, "default", "#rsvp")
 tpl = "[出欠]『:title』[:date]まで残り:remain日。回答確定期限ですので本日中にURLより回答確定して下さい([Maybe]不可) #2289bb :desc"
 talk_event(bb2289, Date.today + 10, tpl, "default", "#rsvp")
 
