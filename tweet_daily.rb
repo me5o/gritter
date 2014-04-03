@@ -62,31 +62,36 @@ talk_event(bb2289, Date.today + 1, tpl)
 
 #rsvp schedule
 tpl = "[出欠]『:title』[:date]まで残り:remain日。20日前までに以下URLより一次回答して下さい。未定の場合も[Maybe]で回答して下さい #2289bb :desc"
-talk_event(bb2289, [Date.today + 20, Date.today + 22], tpl, "default", "#rsvp")
+talk_event(bb2289, [Date.today + 20, Date.today + 21], tpl, "default", "#rsvp")
 tpl = "[出欠]『:title』[:date]まで残り:remain日。回答確定期限ですので本日中にURLより回答確定して下さい([Maybe]不可) #2289bb :desc"
 talk_event(bb2289, Date.today + 10, tpl, "default", "#rsvp")
 
 members = bb2289.members("active-members")
 bb2289.event_manager.events.each do |evt|
   diff = (evt[:start_date] - Date.today).to_i
-  if diff < 20 && diff > 10
+  case diff
+  when 11..20
     answerd = []
     bb2289.event_manager.event_guests(evt[:id]).each do |g|
       answerd << g[:display_name]
     end
     not_answerd = members.values - answerd
 
-    if (not_answerd.size.to_f / members.values.size.to_f) < 0.5
-      msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
-      bb2289.talk_to not_answerd, msg, true, 140
+    if (not_answerd.size.to_f / members.values.size.to_f) < 0.7
+      if diff == 20
+        msg = "[出欠未回答]『#{evt[:name]}』一次回答、本日まで！不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
+        bb2289.talk_to not_answerd, msg, true, 140
+      else
+        msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
+        bb2289.talk_to not_answerd, msg, true, 140
 
-      msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています→ #{evt[:url]} #2289bb 不明な場合も[Maybe]で登録"
-      bb2289.talk_to not_answerd, msg, false, 140, false
+        msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています→ #{evt[:url]} #2289bb 不明な場合も[Maybe]で登録"
+        bb2289.talk_to not_answerd, msg, false, 140, false
+      end
     else
-      puts "[warning]『#{evt[:name]}』50%以上が未回答の為、投稿を保留しました"
+      puts "[warning]『#{evt[:name]}』未回答者が多い為、投稿を保留しました"
     end
-  end
-  if diff == 10
+  when 10
     bb2289.event_manager.event_guests(evt[:id]).each do |g|
       msg = "[出欠確認]『#{evt[:name]}』のあなたの回答は[#{g[:rsvp]}]です。"
       if g[:rsvp] == :maybe
@@ -98,8 +103,7 @@ bb2289.event_manager.events.each do |evt|
       bb2289.talk_to g[:display_name], msg, true, 140
       sleep 15
     end
-  end
-  if diff == 9
+  when 9
     not_answerd = []
     bb2289.event_manager.event_guests(evt[:id], :maybe).each do |g|
       not_answerd << g[:display_name]
