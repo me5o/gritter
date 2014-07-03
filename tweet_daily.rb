@@ -79,13 +79,16 @@ bb2289.event_manager.events.each do |evt|
 
     if (not_answerd.size.to_f / members.values.size.to_f) < 0.7
       if diff == 20
-        msg = "[出欠未回答]『#{evt[:name]}』一次回答、本日まで！不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
+#        msg = "[出欠未回答]『#{evt[:name]}』一次回答、本日まで！不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
+        msg = "[出欠未回答]『#{evt[:name]}』一次回答、本日まで！不明な場合も[Maybe]で登録。#{evt[:url]} ※このDMに返信しないで"
         bb2289.talk_to not_answerd, msg, true, 140
       else
-        msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
+#        msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
+        msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています。不明な場合も[Maybe]で登録。#{evt[:url]} ※このDMに返信しないで"
         bb2289.talk_to not_answerd, msg, true, 140
 
-        msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています→ #{evt[:url]} #2289bb 不明な場合も[Maybe]で登録"
+#        msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています→ #{evt[:url]} #2289bb 不明な場合も[Maybe]で登録"
+        msg = "[出欠未回答]『#{evt[:name]}』一次回答の期限を過ぎています→ #{evt[:url]} 不明な場合も[Maybe]で登録"
         bb2289.talk_to not_answerd, msg, false, 140, false
       end
     else
@@ -99,7 +102,8 @@ bb2289.event_manager.events.each do |evt|
       else
         msg << "変更がある場合は本日中に！早退/遅刻は必ずコメント欄に！"
       end
-      msg << "回答用URLは #2289bb を参照。※このDMに返信しないで"
+#      msg << "回答用URLは #2289bb を参照。※このDMに返信しないで"
+      msg << " #{evt[:url]} ※このDMに返信しないで"
       bb2289.talk_to g[:display_name], msg, true, 140
       sleep 15
     end
@@ -108,7 +112,8 @@ bb2289.event_manager.events.each do |evt|
     bb2289.event_manager.event_guests(evt[:id], :maybe).each do |g|
       not_answerd << g[:display_name]
     end
-    msg = "『#{evt[:name]}』二次回答期限を過ぎています(Maybe不可)→ #{evt[:url]} #2289bb 確定できない場合はページに見通しをコメント"
+#    msg = "『#{evt[:name]}』二次回答期限を過ぎています(Maybe不可)→ #{evt[:url]} #2289bb 確定できない場合はページに見通しをコメント"
+    msg = "『#{evt[:name]}』二次回答期限を過ぎています(Maybe不可)→ #{evt[:url]} 確定できない場合はページに見通しをコメント"
     bb2289.talk_to not_answerd, msg, false, 140, false
   end
 end
