@@ -110,7 +110,7 @@ bb2289.event_manager.events.each do |evt|
   when 9
     not_answerd = []
     bb2289.event_manager.event_guests(evt[:id], :maybe).each do |g|
-      not_answerd << g[:display_name]
+      not_answerd << g[:display_name] if members.values.include?(g[:display_name])
     end
     msg = "『#{evt[:name]}』二次回答期限を過ぎています(Maybe不可)→ #{evt[:url]} #2289bb 確定できない場合はページに見通しをコメント"
 #    msg = "『#{evt[:name]}』二次回答期限を過ぎています(Maybe不可)→ #{evt[:url]} 確定できない場合はページに見通しをコメント"
