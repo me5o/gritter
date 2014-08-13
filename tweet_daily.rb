@@ -96,16 +96,18 @@ bb2289.event_manager.events.each do |evt|
     end
   when 10
     bb2289.event_manager.event_guests(evt[:id]).each do |g|
-      msg = "[出欠確認]『#{evt[:name]}』のあなたの回答は[#{g[:rsvp]}]です。"
-      if g[:rsvp] == :maybe
-        msg << "本日中に回答を確定して下さい。(maybe不可) "
-      else
-        msg << "変更がある場合は本日中に！早退/遅刻は必ずコメント欄に！"
+      if members.values.include?(g[:display_name])
+        msg = "[出欠確認]『#{evt[:name]}』のあなたの回答は[#{g[:rsvp]}]です。"
+        if g[:rsvp] == :maybe
+          msg << "本日中に回答を確定して下さい。(maybe不可) "
+        else
+          msg << "変更がある場合は本日中に！早退/遅刻は必ずコメント欄に！"
+        end
+        msg << "回答用URLは #2289bb を参照。※このDMに返信しないで"
+  #      msg << " #{evt[:url]} ※このDMに返信しないで"
+        bb2289.talk_to g[:display_name], msg, true, 140
+        sleep 15
       end
-      msg << "回答用URLは #2289bb を参照。※このDMに返信しないで"
-#      msg << " #{evt[:url]} ※このDMに返信しないで"
-      bb2289.talk_to g[:display_name], msg, true, 140
-      sleep 15
     end
   when 9
     not_answerd = []
