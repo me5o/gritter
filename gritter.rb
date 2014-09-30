@@ -54,7 +54,7 @@ class Gritter
     @twitter.update(message) if @twitter
   end
 
-  def talk_to(user, message, is_private = true, limit = 140, shrink = true)
+  def talk_to(user, message, is_private = true, limit = 138, shrink = true)
     users = user.kind_of?(Array) ? user : [ user ]
     if is_private # direct message
       users.each_with_index do |u, idx|
