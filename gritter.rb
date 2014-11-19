@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 require 'rubygems'
 require 'twitter'
-require 'gcalapi'
+require 'google/api_client'
 require 'yaml'
 require 'uri'
 require 'cgi'
@@ -33,8 +33,16 @@ class Gritter
       )
     end
 
-    @google = GoogleCalendar::Service.new(
-      @conf["google"]["id"],@conf["google"]["password"])
+    @google = Google::APIClient.new(:application_name => 'Gritter')
+    key = Google::APIClient::KeyUtils.load_from_pkcs12(@conf["google"]["key"], @conf["google"]["password"])
+    @google.authorization = Signet::OAuth2::Client.new(
+      :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
+      :audience => 'https://accounts.google.com/o/oauth2/token',
+      :scope => 'https://www.googleapis.com/auth/calendar.readonly',
+      :issuer => @conf["google"]["mail"],
+      :signing_key => key
+    )
+    @google.authorization.fetch_access_token!
     @feed = @conf["google"]["calendar_feed"]
 
     if @conf["tweetvite"]
@@ -43,9 +51,18 @@ class Gritter
   end
 
   def schedule(index = "default", option = {})
-    option.merge!({ "max-results" => 999, "orderby" => "starttime", "sortorder" => "ascending" })
-    cal = GoogleCalendar::Calendar.new(@google, @feed[index])
-    cal.events(option)
+    option.merge!({
+      "calendarId" => @feed[index],
+      "maxResults" => 999,
+      "orderBy" => "startTime",
+      "singleEvents" => "True"
+    })
+    option["timeMax"] = option["timeMax"].iso8601 if option["timeMax"]
+    option["timeMin"] = option["timeMin"].iso8601 if option["timeMin"]
+
+    cal = @google.discovered_api('calendar', 'v3')
+    result = @google.execute(:api_method => cal.events.list, :parameters => option)
+    result.data.items
   end
 
   def talk(message, limit = 140, shrink = true)
@@ -185,24 +202,20 @@ class Gritter
     end
     message
   end
-end
 
-class GoogleCalendar::Event
-  def to_message(format = ":date : :title :where (:desc)")
+  def event_to_message(event, format = ":date : :title :where (:desc)")
     val = {"title" => "", "where" => "", "desc" => "", "date" => "", "remain" => ""}
 
-    val["title"] = self.title
-    val["where"] = "at " + self.where unless self.where.nil?
-    val["desc"] = self.desc.split("\n").first unless self.desc.nil?
-    st = self.st.getlocal
+    val["title"] = event.summary
+    val["where"] = "at " + event.location unless event.location.nil?
+    val["desc"] = event.description.split("\n").first unless event.description.nil?
+    st = event.start.dateTime.getlocal
     val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
-    if self.allday
-      t = self.st.getlocal
-      val["date"] = t.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[t.wday]})")
+    unless event.start.date.nil?
+      val["date"] = st.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]})")
     else
-      t = self.st.getlocal
-      date_from = self.st.getlocal.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[t.wday]}) %H:%M")
-      date_to =  self.en.getlocal.strftime("%H:%M")
+      date_from = st.getlocal.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]}) %H:%M")
+      date_to =  event.end.dateTime.getlocal.strftime("%H:%M")
       val["date"] = "#{date_from}-#{date_to}"
     end
 
@@ -213,6 +226,31 @@ class GoogleCalendar::Event
     ret.strip
   end
 end
+
+#class Google::APIClient::Schema::Calendar::V3::Event
+#  def to_message(format = ":date : :title :where (:desc)")
+#    val = {"title" => "", "where" => "", "desc" => "", "date" => "", "remain" => ""}
+#
+#    val["title"] = self.summary
+#    val["where"] = "at " + self.location unless self.location.nil?
+#    val["desc"] = self.description.split("\n").first unless self.description.nil?
+#    st = self.start.dateTime.getlocal
+#    val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
+#    unless self.start.date.nil?
+#      val["date"] = st.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]})")
+#    else
+#      date_from = st.getlocal.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]}) %H:%M")
+#      date_to =  self.end.dateTime.getlocal.strftime("%H:%M")
+#      val["date"] = "#{date_from}-#{date_to}"
+#    end
+#
+#    ret = format.clone
+#    val.each_pair do |key, val|
+#      ret.gsub! ":#{key}", val
+#    end
+#    ret.strip
+#  end
+#end
 
 if $0 == __FILE__
   gritter = Gritter.new
