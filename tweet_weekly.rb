@@ -3,12 +3,15 @@
 $:.unshift(File.dirname(__FILE__))
 require 'gritter'
 
-def talk_event(me, event_date, tpl = nil, cal = "default")
+def talk_event(me, event_date, tpl = nil, cal = "default", keyword = nil)
   tpl ||= "[イベント情報]『:title』:date :where #event :desc"
   dates = event_date.is_a?(Array) ? event_date : [event_date]
   dates << dates[0] if dates.size == 1
-  sec = 1/24/60/60
-  me.schedule(cal, "start-min" => dates[0], "start-max" => dates[1] + (1 - sec)).each do |event|
+  dates.map! {|item| item.is_a?(Date) ? item.to_time : item}
+  day = 60 * 60 * 24
+  opt = { "timeMin" => dates[0], "timeMax" => dates[1] + (day - 1) }
+  opt["q"] = keyword if keyword
+  me.schedule(cal, opt).each do |event|
     me.talk me.event_to_message(event, tpl), 140
     sleep 1
   end
