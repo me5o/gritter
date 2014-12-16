@@ -177,6 +177,29 @@ class Gritter
     end
   end
 
+  def event_to_message(event, format = ":date : :title :where (:desc)")
+    val = {"title" => "", "where" => "", "desc" => "", "date" => "", "remain" => ""}
+
+    val["title"] = event.summary
+    val["where"] = "at " + event.location unless event.location.nil?
+    val["desc"] = event.description.split("\n").first unless event.description.nil?
+    st = event.start.dateTime.getlocal
+    val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
+    unless event.start.date.nil?
+      val["date"] = st.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]})")
+    else
+      date_from = st.getlocal.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]}) %H:%M")
+      date_to =  event.end.dateTime.getlocal.strftime("%H:%M")
+      val["date"] = "#{date_from}-#{date_to}"
+    end
+
+    ret = format.clone
+    val.each_pair do |key, val|
+      ret.gsub! ":#{key}", val
+    end
+    ret.strip
+  end
+
   private
   def shrink_url(src)
     ret = src.clone
@@ -201,29 +224,6 @@ class Gritter
       message = message.split(//u)[0..limit - 2].join + "…"
     end
     message
-  end
-
-  def event_to_message(event, format = ":date : :title :where (:desc)")
-    val = {"title" => "", "where" => "", "desc" => "", "date" => "", "remain" => ""}
-
-    val["title"] = event.summary
-    val["where"] = "at " + event.location unless event.location.nil?
-    val["desc"] = event.description.split("\n").first unless event.description.nil?
-    st = event.start.dateTime.getlocal
-    val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
-    unless event.start.date.nil?
-      val["date"] = st.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]})")
-    else
-      date_from = st.getlocal.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]}) %H:%M")
-      date_to =  event.end.dateTime.getlocal.strftime("%H:%M")
-      val["date"] = "#{date_from}-#{date_to}"
-    end
-
-    ret = format.clone
-    val.each_pair do |key, val|
-      ret.gsub! ":#{key}", val
-    end
-    ret.strip
   end
 end
 
