@@ -62,7 +62,26 @@ class Gritter
 
     cal = @google.discovered_api('calendar', 'v3')
     result = @google.execute(:api_method => cal.events.list, :parameters => option)
-    result.data.items
+#    result.data.items
+#    全日イベントのみUTC基準で検索されるので範囲外のイベントは手動で除外
+    items = []
+    result.data.items.each do |item|
+#        if item.start.respond_to?(:dateTime)
+        if item.start.date.nil?
+            items << item
+        else
+            date_from = DateTime.parse(item.start.date) - Rational(9, 24)
+            date_to = DateTime.parse(item.end.date) - Rational(9, 24) - Rational(1, 3600)
+            date_min = DateTime.parse(option["timeMin"])
+            date_max = DateTime.parse(option["timeMax"])
+            if date_from.between?(date_min, date_max) || date_to.between?(date_min, date_max)
+                item.start.date = date_from.to_time.getlocal.strftime("%Y-%m-%d")
+                item.end.date = date_to.to_time.getlocal.strftime("%Y-%m-%d")
+                items << item
+            end
+        end
+    end
+    items
   end
 
   def talk(message, limit = 140, shrink = true)
@@ -179,19 +198,21 @@ class Gritter
 
   def event_to_message(event, format = ":date : :title :where (:desc)")
     val = {"title" => "", "where" => "", "desc" => "", "date" => "", "remain" => ""}
+    st = nil
 
     val["title"] = event.summary
     val["where"] = "at " + event.location unless event.location.nil?
     val["desc"] = event.description.split("\n").first unless event.description.nil?
-    st = event.start.dateTime.getlocal
-    val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
     unless event.start.date.nil?
+      st = Date.strptime(event.start.date, "%Y-%m-%d")
       val["date"] = st.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]})")
     else
-      date_from = st.getlocal.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]}) %H:%M")
+      st = event.start.dateTime.getlocal
+      date_from = st.strftime("%m/%d(#{%w(日 月 火 水 木 金 土)[st.wday]}) %H:%M")
       date_to =  event.end.dateTime.getlocal.strftime("%H:%M")
       val["date"] = "#{date_from}-#{date_to}"
     end
+    val["remain"] = (Date.new(st.year, st.month, st.day) - Date.today).truncate.to_s
 
     ret = format.clone
     val.each_pair do |key, val|
