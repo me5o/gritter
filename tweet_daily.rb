@@ -138,14 +138,41 @@ tpl = "『:title』[:date]まで残り:remain日！ #2289bb :desc"
 talk_event(bb2289, [Date.today + 1, Date.today + 365], tpl, "countdown")
 
 #new commer
-members = bb2289.members("twizz-members", true)
-if members.size < 5
-  members.each do |key, val|
+new_members = bb2289.members("twizz-members", true)
+if new_members.size < 5
+  new_members.each do |key, val|
     bb2289.talk "[メンバー情報] メンバーに @#{val} さんが加わりました！ http://bit.ly/Hw7U9V #2289bb", 140
     sleep 1
   end
 else
-  msg = "[warning] メンバーに5件以上の追加があった為、投稿を保留しました : " + members.values.join(", ")
+  msg = "[warning]メンバーに5件以上の追加があった為、投稿を保留しました : " + new_members.values.join(",")
+  puts msg
+  bb2289.talk_to admins.values, msg, true, 140
+end
+
+#check list consistency
+all_members = bb2289.members("twizz-members")
+not_exists = members.values - all_members.values
+if not_exists.size > 0
+  msg = "[warning]active-membersにtwizz-membersにいないメンバーが存在します : " + not_exists.join(",")
+  puts msg
+  bb2289.talk_to admins.values, msg, true, 140
+end
+sections = ['rhythm', 'tb', 'sax', 'tp']
+section_members = []
+sections.each do |section|
+  section_members += bb2289.members(section).values
+end
+section_members.uniq!
+not_exists = members.values - section_members
+if not_exists.size > 0
+  msg = "[warning]active-membersにどのセクション用リストにもいないメンバーが存在します : " + not_exists.join(",")
+  puts msg
+  bb2289.talk_to admins.values, msg, true, 140
+end
+not_exists = section_members - members.values
+if not_exists.size > 0
+  msg = "[warning]セクション用リストにactive-membersにいないメンバーが存在します : " + not_exists.join(",")
   puts msg
   bb2289.talk_to admins.values, msg, true, 140
 end
