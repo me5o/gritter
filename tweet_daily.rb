@@ -68,6 +68,7 @@ talk_event(bb2289, [Date.today + 20, Date.today + 21], tpl, "default", "#rsvp")
 tpl = "[出欠]『:title』[:date]まで残り:remain日。回答確定期限ですので本日中にURLより回答確定して下さい([Maybe]不可) #2289bb :desc"
 talk_event(bb2289, Date.today + 10, tpl, "default", "#rsvp")
 
+admins = bb2289.members("admin")
 members = bb2289.members("active-members")
 bb2289.event_manager.events.each do |evt|
   diff = (evt[:start_date] - Date.today).to_i
@@ -94,7 +95,9 @@ bb2289.event_manager.events.each do |evt|
         bb2289.talk_to not_answerd, msg, false, 140, false
       end
     else
-      puts "[warning]『#{evt[:name]}』未回答者が多い為、投稿を保留しました"
+      msg = "[warning]『#{evt[:name]}』未回答者70%を超えている為、投稿を保留しました"
+      puts msg
+      bb2289.talk_to admins.values, msg, true, 140
     end
   when 10
     bb2289.event_manager.event_guests(evt[:id]).each do |g|
@@ -142,7 +145,9 @@ if members.size < 5
     sleep 1
   end
 else
-  puts "[warning] メンバーに5件以上の追加がありました。投稿を保留しました : " + members.values.join(", ")
+  msg = "[warning] メンバーに5件以上の追加があった為、投稿を保留しました : " + members.values.join(", ")
+  puts msg
+  bb2289.talk_to admins.values, msg, true, 140
 end
 
 puts "end."
