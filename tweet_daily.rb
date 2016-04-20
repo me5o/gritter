@@ -95,8 +95,7 @@ bb2289.event_manager.events.each do |evt|
         bb2289.talk_to not_answerd, msg, false, 140, false
       end
     else
-      msg = "[warning]『#{evt[:name]}』未回答者70%を超えている為、投稿を保留しました"
-      puts msg
+      msg = "[WARN]『#{evt[:name]}』未回答者70%を超えている為、投稿を保留しました"
       bb2289.talk_to admins.values, msg, true, 140
     end
   when 10
@@ -145,8 +144,7 @@ if new_members.size < 5
     sleep 1
   end
 else
-  msg = "[warning]メンバーに5件以上の追加があった為、投稿を保留しました : " + new_members.values.join(",")
-  puts msg
+  msg = "[WARN]メンバーに5件以上の追加があった為、投稿を保留しました : " + new_members.values.join(",")
   bb2289.talk_to admins.values, msg, true, 140
 end
 
@@ -154,8 +152,7 @@ end
 all_members = bb2289.members("twizz-members")
 not_exists = members.values - all_members.values
 if not_exists.size > 0
-  msg = "[warning]active-membersにtwizz-membersにいないメンバーが存在します : " + not_exists.join(",")
-  puts msg
+  msg = "[WARN]active-membersにtwizz-membersにいないメンバーが存在します : " + not_exists.join(",")
   bb2289.talk_to admins.values, msg, true, 140
 end
 sections = ['rhythm', 'tb', 'sax', 'tp']
@@ -166,14 +163,12 @@ end
 section_members.uniq!
 not_exists = members.values - section_members
 if not_exists.size > 0
-  msg = "[warning]active-membersにどのセクション用リストにもいないメンバーが存在します : " + not_exists.join(",")
-  puts msg
+  msg = "[WARN]active-membersにどのセクション用リストにもいないメンバーが存在します : " + not_exists.join(",")
   bb2289.talk_to admins.values, msg, true, 140
 end
 not_exists = section_members - members.values
 if not_exists.size > 0
-  msg = "[warning]セクション用リストにactive-membersにいないメンバーが存在します : " + not_exists.join(",")
-  puts msg
+  msg = "[WARN]セクション用リストにactive-membersにいないメンバーが存在します : " + not_exists.join(",")
   bb2289.talk_to admins.values, msg, true, 140
 end
 
