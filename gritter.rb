@@ -46,7 +46,10 @@ class Gritter
     @feed = @conf["google"]["calendar_feed"]
 
     if @conf["tweetvite"]
-      @event_manager = EventManager.new(@conf["tweetvite"]["id"])
+#      @event_manager = EventManager.new(@conf["tweetvite"]["id"])
+      @event_manager = EventManager::Tweetvite.new(@conf["tweetvite"]["id"])
+    else
+      @event_manager = EventManager::Twipla.new(@twitter.user.screen_name)
     end
   end
 
