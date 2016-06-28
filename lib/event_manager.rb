@@ -167,9 +167,9 @@ module EventManager
               "rsvp" => rsvp,
               "profile" => {
                 "service_type" => "1",  #Twitter
-                "name" => id,
+                "name" => name,
                 "profile_image_url" => image_url,
-                "display_name" => name,
+                "display_name" => id,
                 "url" => "#{self.class::BASE_URL}/users/#{id}",
                 "profile_url" => nil,
               },
