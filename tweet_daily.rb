@@ -80,7 +80,7 @@ bb2289.event_manager.events.each do |evt|
     end
     not_answerd = members.values - answerd
 
-    if (not_answerd.size.to_f / members.values.size.to_f) < 0.7
+    if (not_answerd.size.to_f / members.values.size.to_f) < 0.5
       if diff == 20
         msg = "[出欠未回答]『#{evt[:name]}』一次回答、本日まで！不明な場合も[Maybe]で登録。回答用URLは #2289bb を参照。※このDMに返信しないで"
 #        msg = "[出欠未回答]『#{evt[:name]}』一次回答、本日まで！不明な場合も[Maybe]で登録。#{evt[:url]} ※このDMに返信しないで"
@@ -95,7 +95,7 @@ bb2289.event_manager.events.each do |evt|
         bb2289.talk_to not_answerd, msg, false, 140, false
       end
     else
-      msg = "[WARN]『#{evt[:name]}』未回答者70%を超えている為、投稿を保留しました"
+      msg = "[WARN]『#{evt[:name]}』未回答者50%を超えている為、投稿を保留しました"
       bb2289.talk_to admins.values, msg, true, 140
     end
   when 10
